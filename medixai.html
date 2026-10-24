@@ -1,0 +1,1636 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>MEDIXAI · Explainable expert system</title>
+    <style>
+      :root {
+        --bg: #f9f8f7;
+        --card: #fff;
+        --ink: #252b35;
+        --muted: #626b78;
+        --line: #dedfe3;
+        --accent: #2268b2;
+        --tint: #eaf2fb;
+        --green: #28734e;
+        --red: #b02d36;
+        --orange: #91561e;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font:
+          16px/1.5 -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+      }
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+      button {
+        cursor: pointer;
+      }
+      button:focus-visible,
+      input:focus-visible,
+      select:focus-visible {
+        outline: 3px solid var(--accent);
+        outline-offset: 3px;
+      }
+      button {
+        min-height: 44px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--card);
+        color: var(--ink);
+        padding: 9px 14px;
+      }
+      button:hover {
+        background: var(--tint);
+      }
+      button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+      .primary {
+        background: var(--accent);
+        color: white;
+        border-color: var(--accent);
+      }
+      .primary:hover {
+        background: #18558f;
+      }
+      .shell {
+        max-width: 1120px;
+        margin: auto;
+        padding: 0 32px 32px;
+      }
+      header {
+        height: 88px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid var(--line);
+        gap: 16px;
+      }
+      .brand {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        font-weight: 750;
+        letter-spacing: -0.7px;
+        font-size: 23px;
+      }
+      .logo {
+        display: grid;
+        place-items: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: var(--accent);
+        color: #fff;
+        font-size: 27px;
+      }
+      .subtle,
+      .muted {
+        color: var(--muted);
+      }
+      .subtle {
+        font-size: 14px;
+      }
+      .badge {
+        display: inline-block;
+        font-size: 14px;
+        color: var(--accent);
+        background: var(--tint);
+        padding: 4px 9px;
+        border-radius: 5px;
+      }
+      .hero {
+        padding: 32px 0 24px;
+        display: flex;
+        justify-content: space-between;
+        gap: 24px;
+        align-items: center;
+      }
+      h1 {
+        font-size: 34px;
+        letter-spacing: -1px;
+        line-height: 1.2;
+        margin: 8px 0 12px;
+      }
+      h2 {
+        font-size: 21px;
+        letter-spacing: -0.4px;
+        margin: 0 0 4px;
+      }
+      h3 {
+        font-size: 17px;
+        margin: 0 0 8px;
+      }
+      p {
+        margin: 0 0 12px;
+      }
+      .hero p {
+        max-width: 620px;
+        margin: 0;
+      }
+      .steps {
+        display: flex;
+        gap: 24px;
+        margin: 0 0 24px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .steps span {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .steps b {
+        border: 1px solid var(--line);
+        border-radius: 50%;
+        width: 26px;
+        height: 26px;
+        display: grid;
+        place-items: center;
+        color: var(--accent);
+      }
+      .nav {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 24px;
+      }
+      .nav button[aria-selected="true"] {
+        background: var(--ink);
+        color: var(--card);
+        border-color: var(--ink);
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1.05fr 1fr;
+        gap: 24px;
+        align-items: start;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 24px;
+      }
+      .row {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: center;
+      }
+      .toolbar {
+        display: flex;
+        gap: 8px;
+        margin: 20px 0 12px;
+      }
+      input[type="search"],
+      select {
+        min-height: 44px;
+        width: 100%;
+        border: 1px solid var(--line);
+        background: var(--card);
+        color: var(--ink);
+        border-radius: 8px;
+        padding: 8px 12px;
+      }
+      select {
+        max-width: 180px;
+      }
+      .symptoms {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        max-height: 290px;
+        overflow: auto;
+        padding: 4px 4px 4px 0;
+      }
+      .symptom {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 10px;
+        min-height: 48px;
+        font-size: 14px;
+        cursor: pointer;
+      }
+      .symptom:has(input:checked) {
+        border-color: var(--accent);
+        background: var(--tint);
+      }
+      input[type="checkbox"] {
+        accent-color: var(--accent);
+        width: 17px;
+        height: 17px;
+        flex-shrink: 0;
+      }
+      .selection {
+        border-top: 1px solid var(--line);
+        padding-top: 16px;
+        margin-top: 16px;
+      }
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin: 8px 0 16px;
+      }
+      .chips button {
+        font-size: 14px;
+        min-height: 44px;
+        padding: 6px 10px;
+        background: var(--tint);
+        border-color: transparent;
+      }
+      .footer-actions {
+        display: flex;
+        gap: 8px;
+      }
+      .footer-actions .primary {
+        flex: 1;
+      }
+      .empty {
+        text-align: center;
+        padding: 48px 8px;
+      }
+      .empty .icon {
+        font-size: 28px;
+        margin-bottom: 12px;
+        color: var(--accent);
+      }
+      .note {
+        font-size: 14px;
+        background: var(--tint);
+        border-radius: 8px;
+        padding: 12px;
+        color: var(--muted);
+        margin-top: 16px;
+      }
+      .notice {
+        border-left: 3px solid var(--orange);
+        padding: 12px 16px;
+        background: var(--card);
+        font-size: 14px;
+        margin-top: 24px;
+      }
+      .notice strong {
+        color: var(--ink);
+      }
+      .error {
+        background: #fce9e7;
+        color: var(--red);
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 16px;
+      }
+      .candidate {
+        width: 100%;
+        text-align: left;
+        margin-top: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .candidate.active {
+        border-color: var(--accent);
+        background: var(--tint);
+      }
+      .score {
+        font-size: 21px;
+        font-weight: 750;
+        white-space: nowrap;
+      }
+      .result-list {
+        max-height: 225px;
+        overflow: auto;
+        margin: 16px 0;
+      }
+      .detail {
+        border-top: 1px solid var(--line);
+        padding-top: 20px;
+      }
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin: 8px 0 16px;
+      }
+      .tag {
+        font-size: 14px;
+        padding: 4px 8px;
+        background: var(--bg);
+        border: 1px solid var(--line);
+        border-radius: 5px;
+      }
+      .good {
+        color: var(--green);
+      }
+      .warn {
+        color: var(--orange);
+      }
+      .logic {
+        font:
+          14px/1.7 Consolas,
+          monospace;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        background: var(--bg);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 12px;
+      }
+      .questions {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin: 12px 0;
+      }
+      .question {
+        border: 1px solid var(--line);
+        padding: 12px;
+        border-radius: 8px;
+      }
+      .question .row {
+        flex-wrap: wrap;
+      }
+      .question button {
+        font-size: 14px;
+        padding: 8px 12px;
+      }
+      .kb-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-top: 16px;
+      }
+      .kb-grid .card {
+        padding: 20px;
+      }
+      .kb-grid details {
+        margin-top: 12px;
+      }
+      .kb-grid summary {
+        cursor: pointer;
+        padding: 10px 0;
+        min-height: 44px;
+        color: var(--accent);
+      }
+      [hidden] {
+        display: none !important;
+      }
+      .stats {
+        font-size: 14px;
+        color: var(--muted);
+        text-align: right;
+      }
+      footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        font-size: 14px;
+        color: var(--muted);
+        margin-top: 24px;
+      }
+      .intro {
+        max-width: 760px;
+      }
+      .method {
+        margin: 20px 0;
+      }
+      .kb-rule {
+        font-size: 14px;
+        overflow-wrap: anywhere;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #191919;
+          --card: #202020;
+          --ink: #fff;
+          --muted: #b5b5b5;
+          --line: #555;
+          --accent: #70b2fa;
+          --tint: #243344;
+          --green: #83c59b;
+          --red: #ffa299;
+          --orange: #e8b576;
+        }
+        .primary {
+          background: #2268b2;
+          color: white;
+        }
+        .nav button[aria-selected="true"] {
+          background: #383836;
+          color: #fff;
+        }
+        .error {
+          background: #382528;
+        }
+      }
+      @media (max-width: 760px) {
+        .shell {
+          padding: 0 20px 24px;
+        }
+        header {
+          height: 76px;
+        }
+        .hero {
+          align-items: flex-start;
+          flex-direction: column;
+          padding-top: 24px;
+        }
+        h1 {
+          font-size: 29px;
+        }
+        .stats {
+          text-align: left;
+        }
+        .grid {
+          grid-template-columns: 1fr;
+        }
+        .kb-grid {
+          grid-template-columns: 1fr;
+        }
+        .steps {
+          gap: 12px;
+          flex-wrap: wrap;
+        }
+        .nav {
+          flex-wrap: wrap;
+        }
+        .card {
+          padding: 20px;
+        }
+        .toolbar {
+          flex-direction: column;
+        }
+        select {
+          max-width: none;
+        }
+        .symptoms {
+          max-height: 270px;
+        }
+        .notice {
+          margin-top: 16px;
+        }
+        footer {
+          flex-direction: column;
+        }
+        .brand {
+          font-size: 21px;
+        }
+        header .subtle {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <header>
+        <div class="brand">
+          <span class="logo" aria-hidden="true">+</span>MEDIXAI
+        </div>
+        <div class="subtle">FOAI / Classical AI laboratory</div>
+        <span class="badge">Academic demo</span>
+      </header>
+      <section class="hero">
+        <div>
+          <span class="subtle"
+            >RULE-BASED · TRANSPARENT · NO MACHINE LEARNING</span
+          >
+          <h1>Symptoms in. Reasoning out.</h1>
+          <p class="muted">
+            Explore how an expert system connects symptom facts to disease
+            rules—and see every step behind a match.
+          </p>
+        </div>
+        <div class="stats">
+          38 disease rules<br />104 symptom facts · 8 categories
+        </div>
+      </section>
+      <div class="steps">
+        <span><b>1</b> Collect facts</span><span><b>2</b> Evaluate rules</span
+        ><span><b>3</b> Inspect the reasoning</span>
+      </div>
+      <nav class="nav" aria-label="Workspace tabs" role="tablist">
+        <button
+          id="tab-assess"
+          role="tab"
+          aria-selected="true"
+          aria-controls="assess"
+        >
+          Symptom workspace</button
+        ><button
+          id="tab-kb"
+          role="tab"
+          aria-selected="false"
+          aria-controls="kb"
+        >
+          Knowledge base</button
+        ><button
+          id="tab-method"
+          role="tab"
+          aria-selected="false"
+          aria-controls="method"
+        >
+          How it works
+        </button>
+      </nav>
+      <main>
+        <section id="assess" role="tabpanel" aria-labelledby="tab-assess">
+          <div class="grid">
+            <section class="card">
+              <div class="row">
+                <div>
+                  <h2>Build your fact set</h2>
+                  <p class="subtle">Select symptoms reported as present.</p>
+                </div>
+                <button id="demo">Try example</button>
+              </div>
+              <div class="toolbar">
+                <input
+                  id="search"
+                  type="search"
+                  aria-label="Search symptoms"
+                  placeholder="Search symptoms…"
+                /><select
+                  id="category"
+                  aria-label="Filter symptoms by disease category"
+                >
+                  <option value="">All categories</option>
+                </select>
+              </div>
+              <div id="symptoms" class="symptoms"></div>
+              <div class="selection">
+                <div class="row">
+                  <h3>
+                    Selected facts <span id="count" class="muted">0</span>
+                  </h3>
+                  <button id="clear">Clear all</button>
+                </div>
+                <div id="chips" class="chips"></div>
+                <div class="footer-actions">
+                  <button id="run" class="primary" disabled>
+                    Evaluate rules →
+                  </button>
+                </div>
+                <div class="note">
+                  Unselected symptoms are unknown—not absent. Your inputs stay
+                  in this browser tab; nothing is sent or saved.
+                </div>
+              </div>
+            </section>
+            <section
+              class="card"
+              id="results"
+              aria-label="Rule evaluation results"
+              aria-live="polite"
+            >
+              <div class="row">
+                <h2>Reasoning workspace</h2>
+                <span class="badge">Ready</span>
+              </div>
+              <div class="empty">
+                <div class="icon" aria-hidden="true">⊢</div>
+                <h3>A clear path from facts to rules.</h3>
+                <p class="muted">
+                  Add symptoms, then evaluate the knowledge base to inspect
+                  ranked matches and missing premises.
+                </p>
+              </div>
+              <div class="note">
+                A rule-match score is a heuristic overlap score. It is not a
+                probability or a medical diagnosis.
+              </div>
+            </section>
+          </div>
+        </section>
+        <section id="kb" role="tabpanel" aria-labelledby="tab-kb" hidden>
+          <div class="row">
+            <div>
+              <h2>Inside the knowledge base</h2>
+              <p class="muted">
+                38 rules extracted from the supplied FOAI PDF. These are
+                unvalidated academic examples.
+              </p>
+            </div>
+          </div>
+          <input
+            id="kb-search"
+            type="search"
+            aria-label="Search disease rules"
+            placeholder="Search disease or category…"
+          />
+          <div class="kb-grid" id="kb-cards"></div>
+        </section>
+        <section
+          id="method"
+          role="tabpanel"
+          aria-labelledby="tab-method"
+          hidden
+        >
+          <div class="card intro">
+            <h2>Explainable by construction</h2>
+            <p class="muted">
+              This prototype ports the PDF's rule evaluation into browser
+              JavaScript. It uses no model, training data, server, or external
+              library.
+            </p>
+            <div class="method">
+              <h3>01 / Facts and rules</h3>
+              <p>
+                Each disease has weighted symptom facts and required premises.
+                Only selected facts are present; explicit “No” answers are
+                absent and other facts remain unknown.
+              </p>
+            </div>
+            <div class="method">
+              <h3>02 / Forward rule evaluation</h3>
+              <p>
+                A single pass evaluates every disease rule. All required facts
+                must be present before its implication fires. Ranking also
+                includes partial overlaps; a partial match is not an inferred
+                disease.
+              </p>
+              <pre class="logic">
+score = 100 × matched weight / total weight
+if any required fact is missing: score ×= 0.60</pre>
+            </div>
+            <div class="method">
+              <h3>03 / Backward premise checks</h3>
+              <p>
+                Choose a hypothesis and inspect its required facts. Answer each
+                unknown premise separately to recompute the results. An absent
+                required premise blocks the rule.
+              </p>
+            </div>
+            <div class="method">
+              <h3>04 / Consistency checks—not formal resolution</h3>
+              <p>
+                The source's contradiction pairs are fever / no fever, high
+                fever / no fever, and diarrhea / constipation. Contradictory
+                inputs block evaluation until corrected. This is a direct input
+                consistency check, not a CNF resolution prover or first-order
+                inference engine.
+              </p>
+            </div>
+            <div class="method">
+              <h3>05 / Scope and safety</h3>
+              <p>
+                Required-premise matches are rule outputs, not clinically
+                confirmed diagnoses. The toy rules can overlap and are neither
+                exhaustive nor medically validated. The UI does not prescribe
+                medication. A symptom-based safety notice is independent of the
+                ranking and is not comprehensive triage.
+              </p>
+            </div>
+            <p class="subtle">
+              Source: FOAI.pdf, expanded MEDIXAI implementation, pages 7–35. The
+              PDF calls this a “40-disease” version; the supplied dictionary
+              contains 38 entries.
+            </p>
+          </div>
+        </section>
+      </main>
+      <aside class="notice">
+        <strong>For learning, not diagnosis.</strong> Do not use this demo to
+        make healthcare decisions or delay care. If you have severe breathing
+        difficulty, chest pain, confusion, fainting, or another medical
+        emergency, contact local emergency services immediately.
+      </aside>
+      <footer>
+        <span>MEDIXAI / Foundations of Artificial Intelligence</span
+        ><span>Unit IV · Knowledge-based reasoning</span>
+      </footer>
+    </div>
+    <script>
+      const KB = {
+        "Common Cold": {
+          category: "Respiratory",
+          severity: "Low",
+          emergency: false,
+          description: "A mild viral upper respiratory infection.",
+          symptoms: {
+            runny_nose: 10,
+            sneezing: 9,
+            dry_cough: 8,
+            sore_throat: 7,
+            low_grade_fever: 5,
+            headache: 4,
+          },
+          required: ["runny_nose", "sneezing"],
+          treatment: "Rest, hydration, steam inhalation, and supportive care.",
+          precaution: "Wash hands, avoid close contact, and stay hydrated.",
+        },
+        Influenza: {
+          category: "Respiratory",
+          severity: "Moderate",
+          emergency: false,
+          description:
+            "An acute viral illness with fever, cough, and body pain.",
+          symptoms: {
+            high_fever: 10,
+            body_pain: 9,
+            fatigue: 8,
+            dry_cough: 7,
+            chills: 6,
+            headache: 5,
+          },
+          required: ["high_fever", "body_pain", "fatigue"],
+          treatment: "Rest, fluids, and symptom relief guidance.",
+          precaution: "Avoid overexertion and monitorworsening symptoms.",
+        },
+        "COVID-19": {
+          category: "Respiratory",
+          severity: "Moderate",
+          emergency: false,
+          description:
+            "A contagious respiratory infection with variable symptoms.",
+          symptoms: {
+            fever: 8,
+            dry_cough: 8,
+            loss_of_smell: 10,
+            loss_of_taste: 10,
+            fatigue: 6,
+            shortness_of_breath: 9,
+          },
+          required: ["fever", "dry_cough"],
+          treatment:
+            "Supportive care, isolation guidance, and medical consultation if severe.",
+          precaution: "Monitor breathing and follow hygiene precautions.",
+        },
+        Pneumonia: {
+          category: "Respiratory",
+          severity: "Serious",
+          emergency: true,
+          description:
+            "A lower respiratory infectionthat may cause breathing difficulty.",
+          symptoms: {
+            fever: 8,
+            shortness_of_breath: 10,
+            chest_pain: 9,
+            wet_cough: 8,
+            fatigue: 6,
+            rapid_breathing: 9,
+          },
+          required: ["fever", "shortness_of_breath"],
+          treatment: "Urgent medical review and supportive care.",
+          precaution: "Flag as serious and advise prompt medical attention.",
+        },
+        Asthma: {
+          category: "Respiratory",
+          severity: "Moderate",
+          emergency: false,
+          description:
+            "A chronic airway condition causing wheezing and breathing difficulty.",
+          symptoms: {
+            wheezing: 10,
+            shortness_of_breath: 9,
+            chest_tightness: 8,
+            cough: 7,
+            night_symptoms: 6,
+            trigger_exposure: 5,
+          },
+          required: ["wheezing", "shortness_of_breath"],
+          treatment: "Trigger avoidance and breathing-support guidance.",
+          precaution: "Avoid known triggers and observe symptom progression.",
+        },
+        "Acute Bronchitis": {
+          category: "Respiratory",
+          severity: "Moderate",
+          emergency: false,
+          description:
+            "Inflammation of bronchial tubes causing cough and discomfort.",
+          symptoms: {
+            persistent_cough: 10,
+            wet_cough: 9,
+            chest_tightness: 8,
+            low_grade_fever: 6,
+            fatigue: 6,
+            mucus: 7,
+          },
+          required: ["persistent_cough"],
+          treatment: "Supportive care and symptom monitoring.",
+          precaution: "Watch for breathing difficultyor prolonged illness.",
+        },
+        Sinusitis: {
+          category: "Respiratory",
+          severity: "Low",
+          emergency: false,
+          description:
+            "Inflammation of sinuses withcongestion and facial pressure.",
+          symptoms: {
+            sinus_pain: 10,
+            nasal_congestion: 9,
+            runny_nose: 8,
+            headache: 7,
+            post_nasal_drip: 6,
+            fever: 5,
+          },
+          required: ["sinus_pain", "nasal_congestion"],
+          treatment: "Hydration and congestion reliefguidance.",
+          precaution: "Keep nose and airways clear and monitored.",
+        },
+        "Allergic Rhinitis": {
+          category: "Respiratory",
+          severity: "Low",
+          emergency: false,
+          description: "Allergy-related nasal irritation.",
+          symptoms: {
+            sneezing: 10,
+            runny_nose: 9,
+            itchy_eyes: 8,
+            nasal_congestion: 7,
+            watery_eyes: 6,
+            no_fever: 5,
+          },
+          required: ["sneezing", "runny_nose"],
+          treatment: "Avoid triggers and use symptomrelief guidance.",
+          precaution: "Track environmental triggers and allergens.",
+        },
+        "Dengue Fever": {
+          category: "Viral",
+          severity: "Serious",
+          emergency: true,
+          description: "A mosquito-borne illness withhigh fever and body pain.",
+          symptoms: {
+            high_fever: 10,
+            body_pain: 9,
+            headache: 8,
+            rash: 7,
+            chills: 6,
+            nausea: 6,
+          },
+          required: ["high_fever", "body_pain"],
+          treatment: "Urgent doctor-advice guidance and hydration.",
+          precaution: "Flag as serious and monitor carefully.",
+        },
+        Chickenpox: {
+          category: "Viral",
+          severity: "Moderate",
+          emergency: false,
+          description: "A viral condition causing itchy blisters and fever.",
+          symptoms: {
+            rash: 10,
+            itching: 9,
+            blisters: 9,
+            fever: 6,
+            fatigue: 5,
+            loss_of_appetite: 5,
+          },
+          required: ["rash", "itching", "blisters"],
+          treatment: "Supportive care and symptom-relief display.",
+          precaution: "Avoid scratching and track skin changes.",
+        },
+        "Typhoid Fever": {
+          category: "Bacterial",
+          severity: "Serious",
+          emergency: true,
+          description:
+            "A bacterial illness with prolonged fever and digestive symptoms.",
+          symptoms: {
+            sustained_fever: 10,
+            abdominal_pain: 9,
+            weakness: 8,
+            loss_of_appetite: 7,
+            constipation: 6,
+            headache: 6,
+          },
+          required: ["sustained_fever", "abdominal_pain"],
+          treatment: "Requires medical attention.",
+          precaution: "Avoid self-treatment advice.",
+        },
+        Tuberculosis: {
+          category: "Bacterial",
+          severity: "Serious",
+          emergency: true,
+          description: "A chronic bacterial infectionoften affecting lungs.",
+          symptoms: {
+            persistent_cough: 10,
+            weight_loss: 9,
+            night_sweats: 9,
+            chest_pain: 8,
+            fever: 7,
+            coughing_blood: 10,
+          },
+          required: ["persistent_cough", "weight_loss"],
+          treatment: "Urgent medical referral guidance.",
+          precaution: "Flag as serious and continue observation.",
+        },
+        "Food Poisoning": {
+          category: "Digestive",
+          severity: "Moderate",
+          emergency: false,
+          description: "Digestive upset caused by contaminated food.",
+          symptoms: {
+            vomiting: 10,
+            diarrhea: 9,
+            abdominal_pain: 8,
+            nausea: 8,
+            weakness: 6,
+            fever: 5,
+          },
+          required: ["vomiting", "diarrhea"],
+          treatment: "Hydration and rest guidance.",
+          precaution: "Highlight food safety and fluid replacement.",
+        },
+        Gastritis: {
+          category: "Digestive",
+          severity: "Low",
+          emergency: false,
+          description:
+            "Inflammation of stomach lining causing acidity and pain.",
+          symptoms: {
+            abdominal_pain: 10,
+            heartburn: 9,
+            nausea: 8,
+            bloating: 7,
+            loss_of_appetite: 6,
+            burping: 6,
+          },
+          required: ["abdominal_pain", "heartburn"],
+          treatment: "Stomach-friendly supportive care advice.",
+          precaution: "Avoid trigger foods.",
+        },
+        Eczema: {
+          category: "Skin",
+          severity: "Low",
+          emergency: false,
+          description:
+            "Inflammatory skin condition marked by itching and dryness.",
+          symptoms: {
+            itching: 10,
+            dry_skin: 9,
+            redness: 8,
+            scaling: 7,
+            swelling: 6,
+            rash: 6,
+          },
+          required: ["itching", "dry_skin"],
+          treatment: "Simple skin-care guidance.",
+          precaution: "Avoid irritants and monitor skin changes.",
+        },
+        Migraine: {
+          category: "Neurological",
+          severity: "Moderate",
+          emergency: false,
+          description:
+            "Recurring headache disorder with nausea or light sensitivity.",
+          symptoms: {
+            severe_headache: 10,
+            sensitivity_to_light: 9,
+            nausea: 8,
+            vomiting: 7,
+            dizziness: 6,
+            aura: 6,
+          },
+          required: ["severe_headache", "sensitivity_to_light"],
+          treatment: "Rest and trigger-management guidance.",
+          precaution: "Track repeated episodes and severity.",
+        },
+        "Urinary Tract Infection": {
+          category: "Urinary",
+          severity: "Moderate",
+          emergency: false,
+          description:
+            "Urinary tract infection withburning urination and urgency.",
+          symptoms: {
+            burning_urination: 10,
+            frequent_urination: 9,
+            cloudy_urine: 8,
+            pelvic_pain: 7,
+            strong_urine_odor: 6,
+            urgency: 6,
+          },
+          required: ["burning_urination", "frequent_urination"],
+          treatment: "Hydration and medical advice guidance.",
+          precaution: "Prompt follow-up if symptoms worsen.",
+        },
+        "Kidney Stones": {
+          category: "Urinary",
+          severity: "Serious",
+          emergency: true,
+          description: "Solid deposits in urinary system causing severe pain.",
+          symptoms: {
+            severe_pain: 10,
+            blood_in_urine: 10,
+            lower_back_pain: 9,
+            difficulty_urinating: 8,
+            nausea: 7,
+            restlessness: 6,
+          },
+          required: ["severe_pain", "blood_in_urine"],
+          treatment: "Urgent-care guidance.",
+          precaution: "Prompt review is important.",
+        },
+        "Heat Stroke": {
+          category: "Miscellaneous",
+          severity: "Emergency",
+          emergency: true,
+          description: "Dangerous overheating condition.",
+          symptoms: {
+            high_fever: 10,
+            dehydration: 9,
+            confusion: 9,
+            rapid_pulse: 8,
+            weakness: 7,
+            fainting: 10,
+          },
+          required: ["high_fever", "dehydration", "confusion"],
+          treatment: "Emergency-level output should appear.",
+          precaution: "Always mark as urgent and severe.",
+        },
+        Dehydration: {
+          category: "Miscellaneous",
+          severity: "Moderate",
+          emergency: false,
+          description:
+            "Fluid-deficiency condition affecting energy and body function.",
+          symptoms: {
+            thirst: 10,
+            weakness: 9,
+            dry_mouth: 8,
+            dark_urine: 8,
+            dizziness: 7,
+            fatigue: 6,
+          },
+          required: ["thirst", "weakness"],
+          treatment: "Fluid-intake and monitoring guidance.",
+          precaution: "Replace fluids and observe carefully.",
+        },
+        Measles: {
+          category: "Viral",
+          severity: "Serious",
+          emergency: true,
+          description:
+            "Contagious viral illness withfever, rash, and respiratory symptoms.",
+          symptoms: {
+            fever: 10,
+            rash: 9,
+            cough: 8,
+            runny_nose: 7,
+            red_eyes: 8,
+            sensitivity_to_light: 6,
+          },
+          required: ["fever", "rash"],
+          treatment: "Urgent medical guidance and supportive advice.",
+          precaution: "Flag as serious and monitor progression.",
+        },
+        Mumps: {
+          category: "Viral",
+          severity: "Moderate",
+          emergency: false,
+          description: "Viral infection affecting salivary glands.",
+          symptoms: {
+            swollen_glands: 10,
+            fever: 8,
+            headache: 7,
+            fatigue: 6,
+            loss_of_appetite: 6,
+            jaw_pain: 8,
+          },
+          required: ["swollen_glands"],
+          treatment: "Supportive care and observationguidance.",
+          precaution: "Rest and symptom monitoring.",
+        },
+        "Hand Foot and Mouth Disease": {
+          category: "Viral",
+          severity: "Moderate",
+          emergency: false,
+          description: "Viral illness causing rash and oral discomfort.",
+          symptoms: {
+            rash: 10,
+            mouth_sores: 9,
+            fever: 8,
+            loss_of_appetite: 6,
+            irritability: 5,
+            sore_throat: 6,
+          },
+          required: ["rash", "mouth_sores"],
+          treatment: "Symptom relief and hydration guidance.",
+          precaution: "Avoid irritation and maintaincleanliness.",
+        },
+        "Viral Fever": {
+          category: "Viral",
+          severity: "Moderate",
+          emergency: false,
+          description: "General viral syndrome with fever and fatigue.",
+          symptoms: {
+            fever: 10,
+            fatigue: 9,
+            chills: 8,
+            body_pain: 8,
+            headache: 7,
+            weakness: 7,
+          },
+          required: ["fever", "fatigue"],
+          treatment: "Rest and fluids guidance.",
+          precaution: "Observe temperature and hydration.",
+        },
+        Cholera: {
+          category: "Bacterial",
+          severity: "Emergency",
+          emergency: true,
+          description:
+            "Severe intestinal infection causing dangerous fluid loss.",
+          symptoms: {
+            diarrhea: 10,
+            vomiting: 9,
+            dehydration: 10,
+            weakness: 8,
+            muscle_cramps: 7,
+            sunken_eyes: 8,
+          },
+          required: ["diarrhea", "vomiting", "dehydration"],
+          treatment: "Urgent care and fluid replacement guidance.",
+          precaution: "Always flag as urgent.",
+        },
+        "Whooping Cough": {
+          category: "Bacterial",
+          severity: "Moderate",
+          emergency: false,
+          description:
+            "Bacterial respiratory infection with severe coughing episodes.",
+          symptoms: {
+            persistent_cough: 10,
+            wet_cough: 9,
+            runny_nose: 7,
+            fatigue: 6,
+            vomiting_after_cough: 8,
+            difficulty_breathing: 8,
+          },
+          required: ["persistent_cough"],
+          treatment: "Supportive respiratory care guidance.",
+          precaution: "Watch for worsening cough attacks.",
+        },
+        "Bacterial Meningitis": {
+          category: "Bacterial",
+          severity: "Emergency",
+          emergency: true,
+          description:
+            "Serious infection affecting brain and spinal cord coverings.",
+          symptoms: {
+            severe_headache: 10,
+            neck_stiffness: 10,
+            fever: 8,
+            confusion: 9,
+            vomiting: 8,
+            sensitivity_to_light: 9,
+          },
+          required: ["severe_headache", "neck_stiffness", "fever"],
+          treatment: "Urgent warning output.",
+          precaution: "Immediate attention should behighlighted.",
+        },
+        Gastroenteritis: {
+          category: "Digestive",
+          severity: "Moderate",
+          emergency: false,
+          description: "Inflammation of stomach and intestines.",
+          symptoms: {
+            vomiting: 10,
+            diarrhea: 9,
+            abdominal_pain: 8,
+            fever: 6,
+            weakness: 6,
+            dehydration: 8,
+          },
+          required: ["vomiting", "diarrhea"],
+          treatment: "Hydration and rest guidance.",
+          precaution: "Monitor fluid status carefully.",
+        },
+        GERD: {
+          category: "Digestive",
+          severity: "Low",
+          emergency: false,
+          description: "Acid reflux condition with burning sensation.",
+          symptoms: {
+            heartburn: 10,
+            acid_reflux: 10,
+            burping: 8,
+            chest_discomfort: 7,
+            bloating: 6,
+            sour_taste: 7,
+          },
+          required: ["heartburn", "acid_reflux"],
+          treatment: "Mild digestive-care guidance.",
+          precaution: "Avoid trigger foods.",
+        },
+        "Peptic Ulcer": {
+          category: "Digestive",
+          severity: "Moderate",
+          emergency: false,
+          description: "Ulcer in stomach or upper intestine.",
+          symptoms: {
+            abdominal_pain: 10,
+            black_stool: 9,
+            loss_of_appetite: 8,
+            heartburn: 7,
+            bloating: 6,
+            nausea: 6,
+          },
+          required: ["abdominal_pain", "black_stool"],
+          treatment: "Medical review guidance and cautionary notes.",
+          precaution: "Persistent bleeding signs areserious.",
+        },
+        Ringworm: {
+          category: "Skin",
+          severity: "Low",
+          emergency: false,
+          description: "Fungal skin infection formingcircular patches.",
+          symptoms: {
+            itching: 10,
+            rash: 9,
+            scaling: 8,
+            redness: 8,
+            dry_skin: 7,
+            ring_shaped_lesion: 10,
+          },
+          required: ["itching", "rash"],
+          treatment: "Hygiene and skin-care guidance.",
+          precaution: "Avoid scratching and maintaincleanliness.",
+        },
+        Scabies: {
+          category: "Skin",
+          severity: "Moderate",
+          emergency: false,
+          description: "Skin infestation causing intense itching.",
+          symptoms: {
+            itching: 10,
+            night_itching: 10,
+            rash: 9,
+            redness: 8,
+            burrows: 10,
+            pimple_like_lesions: 7,
+          },
+          required: ["itching", "night_itching", "rash"],
+          treatment: "Symptom-relief and hygiene guidance.",
+          precaution: "Flag persistent itching for follow-up.",
+        },
+        Psoriasis: {
+          category: "Skin",
+          severity: "Moderate",
+          emergency: false,
+          description: "Chronic skin condition with plaques and scaling.",
+          symptoms: {
+            scaling: 10,
+            red_plaques: 10,
+            itching: 8,
+            dry_skin: 8,
+            joint_pain: 6,
+            thickened_skin: 7,
+          },
+          required: ["scaling", "red_plaques"],
+          treatment: "Ongoing management guidance.",
+          precaution: "Show that it is chronic and may recur.",
+        },
+        "Tension Headache": {
+          category: "Neurological",
+          severity: "Low",
+          emergency: false,
+          description:
+            "Common headache associated with stress and muscle tension.",
+          symptoms: {
+            headache: 10,
+            neck_pain: 8,
+            muscle_tightness: 8,
+            stress: 7,
+            mild_dizziness: 6,
+            difficulty_concentrating: 6,
+          },
+          required: ["headache", "neck_pain"],
+          treatment: "Rest and stress-relief guidance.",
+          precaution: "Monitor stress triggers.",
+        },
+        Vertigo: {
+          category: "Neurological",
+          severity: "Moderate",
+          emergency: false,
+          description: "Balance-related condition causing spinning sensation.",
+          symptoms: {
+            dizziness: 10,
+            loss_of_balance: 10,
+            nausea: 8,
+            vomiting: 7,
+            difficulty_walking: 8,
+            fainting: 7,
+          },
+          required: ["dizziness", "loss_of_balance"],
+          treatment: "Balance-care and observation guidance.",
+          precaution: "Use caution when standing or moving.",
+        },
+        Cystitis: {
+          category: "Urinary",
+          severity: "Moderate",
+          emergency: false,
+          description: "Bladder inflammation causingpainful urination.",
+          symptoms: {
+            frequent_urination: 10,
+            burning_urination: 9,
+            pelvic_pain: 8,
+            cloudy_urine: 7,
+            urgency: 7,
+            lower_abdominal_pain: 8,
+          },
+          required: ["frequent_urination", "burning_urination"],
+          treatment: "Bladder-care and hydration guidance.",
+          precaution: "Observe for persistence.",
+        },
+        "Iron Deficiency Anemia": {
+          category: "Miscellaneous",
+          severity: "Moderate",
+          emergency: false,
+          description: "Low iron condition producingweakness and fatigue.",
+          symptoms: {
+            fatigue: 10,
+            weakness: 9,
+            pale_skin: 8,
+            dizziness: 8,
+            shortness_of_breath: 7,
+            headache: 6,
+          },
+          required: ["fatigue", "weakness"],
+          treatment: "Nutritional support guidance.",
+          precaution: "Persistent fatigue should be reviewed.",
+        },
+        "Heat Exhaustion": {
+          category: "Miscellaneous",
+          severity: "Moderate",
+          emergency: false,
+          description: "Heat-related condition less severe than heat stroke.",
+          symptoms: {
+            sweating: 10,
+            weakness: 9,
+            dizziness: 8,
+            fatigue: 7,
+            nausea: 7,
+            headache: 6,
+          },
+          required: ["sweating", "weakness"],
+          treatment: "Cooling and hydration guidance.",
+          precaution: "Flag worsening symptoms carefully.",
+        },
+      };
+      const facts = new Set(),
+        absent = new Set();
+      let ranked = [],
+        active = "";
+      const $ = (id) => document.getElementById(id),
+        label = (s) =>
+          s.replaceAll("_", " ").replace(/^./, (c) => c.toUpperCase());
+      const esc = (s) =>
+        String(s).replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[c],
+        );
+      const symptoms = [
+        ...new Set(Object.values(KB).flatMap((d) => Object.keys(d.symptoms))),
+      ].sort();
+      const categories = [
+        ...new Set(Object.values(KB).map((d) => d.category)),
+      ].sort();
+      const contradictions = [
+        ["fever", "no_fever"],
+        ["high_fever", "no_fever"],
+        ["diarrhea", "constipation"],
+      ];
+      const warningFacts = [
+        "shortness_of_breath",
+        "difficulty_breathing",
+        "chest_pain",
+        "confusion",
+        "fainting",
+        "coughing_blood",
+        "black_stool",
+      ];
+      for (const c of categories) {
+        const o = document.createElement("option");
+        o.value = c;
+        o.textContent = c;
+        $("category").append(o);
+      }
+      function renderSymptoms() {
+        const q = $("search").value.toLowerCase(),
+          cat = $("category").value;
+        const allowed = new Set(
+          Object.values(KB)
+            .filter((d) => !cat || d.category === cat)
+            .flatMap((d) => Object.keys(d.symptoms)),
+        );
+        const shown = symptoms.filter(
+          (s) => allowed.has(s) && label(s).toLowerCase().includes(q),
+        );
+        $("symptoms").innerHTML =
+          shown
+            .map(
+              (s) =>
+                `<label class="symptom"><input type="checkbox" value="${s}" ${facts.has(s) ? "checked" : ""}>${label(s)}</label>`,
+            )
+            .join("") || '<p class="muted">No symptoms match your search.</p>';
+      }
+      function renderFacts() {
+        $("count").textContent = facts.size;
+        $("chips").innerHTML =
+          [...facts]
+            .map(
+              (s) =>
+                `<button data-remove="${s}" aria-label="Remove ${label(s)}">${label(s)} ×</button>`,
+            )
+            .join("") || '<span class="subtle">No facts selected yet.</span>';
+        $("run").disabled = !facts.size;
+        renderSymptoms();
+      }
+      function invalidate() {
+        ranked = [];
+        active = "";
+        $("results").innerHTML =
+          '<h2>Reasoning workspace</h2><div class="empty"><div class="icon" aria-hidden="true">⊢</div><h3>' +
+          (facts.size ? "Facts updated." : "Start with symptom facts.") +
+          '</h3><p class="muted">Select Evaluate rules to generate a fresh reasoning trace.</p></div>';
+      }
+      function evaluate() {
+        return Object.entries(KB)
+          .map(([name, d]) => {
+            const matched = Object.keys(d.symptoms).filter((s) => facts.has(s));
+            const missing = d.required.filter((s) => !facts.has(s));
+            const blocked = d.required.filter((s) => absent.has(s));
+            const total = Object.values(d.symptoms).reduce((a, b) => a + b, 0);
+            const weight = matched.reduce((a, s) => a + d.symptoms[s], 0);
+            return {
+              name,
+              ...d,
+              matched,
+              missing,
+              blocked,
+              weight,
+              total,
+              score: ((100 * weight) / total) * (missing.length ? 0.6 : 1),
+            };
+          })
+          .filter((d) => d.matched.length)
+          .sort((a, b) => b.score - a.score || a.name.localeCompare(b.name));
+      }
+      function run() {
+        const pairs = contradictions.filter((p) =>
+          p.every((s) => facts.has(s)),
+        );
+        if (pairs.length) {
+          ranked = [];
+          active = "";
+          $("results").innerHTML =
+            '<h2>Review your facts</h2><div class="error">Conflicting input: ' +
+            pairs.map((p) => p.map(label).join(" + ")).join("; ") +
+            ". Remove or correct one fact in each pair before continuing.</div>";
+          return;
+        }
+        ranked = evaluate();
+        if (!ranked.length) {
+          $("results").innerHTML =
+            '<h2>No matching rules</h2><p class="muted">The knowledge base has no overlap with these facts. This does not rule out illness.</p>';
+          return;
+        }
+        if (!ranked.some((d) => d.name === active)) active = ranked[0].name;
+        renderResults();
+      }
+      function renderResults() {
+        const d = ranked.find((r) => r.name === active),
+          warn = warningFacts.filter((s) => facts.has(s));
+        $("results").innerHTML =
+          `<div class="row"><div><h2>Rule-match results</h2><span class="subtle">${ranked.length} candidates · ${facts.size} present facts</span></div><span class="badge">Evaluated</span></div>${warn.length ? `<div class="error">Safety notice: ${warn.map(label).join(", ")} reported. This demo cannot assess urgency. Seek prompt medical advice; severe symptoms require emergency care.</div>` : ""}<div class="result-list">${ranked.map((r) => `<button class="candidate ${r.name === active ? "active" : ""}" data-disease="${esc(r.name)}" aria-pressed="${r.name === active}"><span><strong>${esc(r.name)}</strong><br><span class="subtle">${r.category} · ${r.blocked.length ? "Required fact absent" : r.missing.length ? "Incomplete premises" : "Required premises met"}</span></span><span class="score">${r.score.toFixed(1)}<span class="subtle">%</span></span></button>`).join("")}</div><p class="subtle">Scores measure weighted rule overlap—not clinical confidence.</p><div class="detail"><div class="row"><h3>${esc(d.name)}</h3><span class="badge">${d.category}</span></div><p class="muted">${esc(d.description)}</p><h3>Matched evidence</h3><div class="tags">${d.matched.map((s) => `<span class="tag good">✓ ${label(s)}</span>`).join("")}</div><h3>Backward premise check</h3><p class="subtle">${d.blocked.length ? "Rule blocked by an explicitly absent required fact." : d.missing.length ? "These required premises are not yet established." : "All required premises hold in this toy rule. This is not a confirmed diagnosis."}</p><div class="questions">${d.missing.map((s) => `<div class="question"><div class="row"><span>${label(s)}${absent.has(s) ? " · Absent" : " · Unknown"}</span><span><button data-answer="${s}" data-value="yes">Yes</button> <button data-answer="${s}" data-value="no" aria-pressed="${absent.has(s)}">No</button> <button data-answer="${s}" data-value="unknown">Unsure</button></span></div></div>`).join("")}</div><h3>Logical trace</h3><pre class="logic">IF ${d.required.map(label).join(" AND ")}
+THEN ${esc(d.name)} [academic rule]
+
+Rule: ${d.blocked.length ? "blocked (required fact absent)" : d.missing.length ? "not fired (premises unknown)" : "fired (required facts present)"}
+Matched weight: ${d.weight} / ${d.total}
+Missing-premise multiplier: ${d.missing.length ? "0.60" : "1.00"}
+Rule-match score: ${d.score.toFixed(1)}%</pre>${d.emergency ? '<div class="error">The source marks this rule as serious or urgent. A rule flag is not validated clinical triage; consult a medical professional.</div>' : ""}<div class="note">This academic output cannot diagnose or recommend a treatment. Consult a qualified clinician for assessment and care.</div></div>`;
+      }
+      function renderKB() {
+        const q = $("kb-search").value.toLowerCase();
+        const entries = Object.entries(KB).filter(([n, d]) =>
+          (n + " " + d.category).toLowerCase().includes(q),
+        );
+        $("kb-cards").innerHTML =
+          entries
+            .map(
+              ([n, d]) =>
+                `<article class="card"><span class="badge">${d.category}</span><h3 style="margin-top:12px">${esc(n)}</h3><p class="subtle">${esc(d.description)}</p><details><summary>Inspect rule & weights</summary><p class="kb-rule">IF ${d.required.map(label).join(" AND ")} → ${esc(n)}</p><div class="tags">${Object.entries(
+                  d.symptoms,
+                )
+                  .map(
+                    ([s, w]) => `<span class="tag">${label(s)} · ${w}</span>`,
+                  )
+                  .join(
+                    "",
+                  )}</div><p class="subtle">Source severity: ${d.severity}<br>Source urgent flag: ${d.emergency ? "Yes" : "No"}<br>Unvalidated academic rule.</p></details></article>`,
+            )
+            .join("") || '<p class="muted">No rules match your search.</p>';
+      }
+      $("search").addEventListener("input", renderSymptoms);
+      $("category").addEventListener("change", renderSymptoms);
+      $("symptoms").addEventListener("change", (e) => {
+        const s = e.target.value;
+        if (e.target.checked) {
+          facts.add(s);
+          absent.delete(s);
+        } else facts.delete(s);
+        renderFacts();
+        invalidate();
+      });
+      $("chips").addEventListener("click", (e) => {
+        const b = e.target.closest("[data-remove]");
+        if (b) {
+          facts.delete(b.dataset.remove);
+          renderFacts();
+          invalidate();
+        }
+      });
+      $("run").onclick = run;
+      $("clear").onclick = () => {
+        facts.clear();
+        absent.clear();
+        renderFacts();
+        invalidate();
+      };
+      $("demo").onclick = () => {
+        facts.clear();
+        absent.clear();
+        ["high_fever", "body_pain", "fatigue", "dry_cough"].forEach((s) =>
+          facts.add(s),
+        );
+        active = "";
+        renderFacts();
+        run();
+      };
+      $("results").onclick = (e) => {
+        const b = e.target.closest("button");
+        if (!b) return;
+        if (b.dataset.disease) {
+          active = b.dataset.disease;
+          renderResults();
+        }
+        if (b.dataset.answer) {
+          const s = b.dataset.answer,
+            v = b.dataset.value;
+          if (v === "yes") {
+            facts.add(s);
+            absent.delete(s);
+          } else {
+            facts.delete(s);
+            if (v === "no") absent.add(s);
+            else absent.delete(s);
+          }
+          renderFacts();
+          run();
+        }
+      };
+      const tabs = ["assess", "kb", "method"];
+      function showTab(id) {
+        tabs.forEach((t) => {
+          $(t).hidden = t !== id;
+          $("tab-" + t).setAttribute("aria-selected", t === id);
+        });
+        if (id === "kb") renderKB();
+      }
+      for (const t of tabs) {
+        $("tab-" + t).onclick = () => showTab(t);
+        $("tab-" + t).onkeydown = (e) => {
+          if (["ArrowRight", "ArrowLeft", "Home", "End"].includes(e.key)) {
+            e.preventDefault();
+            const i = tabs.indexOf(t);
+            const next =
+              e.key === "Home"
+                ? 0
+                : e.key === "End"
+                  ? 2
+                  : (i + (e.key === "ArrowRight" ? 1 : 2)) % 3;
+            showTab(tabs[next]);
+            $("tab-" + tabs[next]).focus();
+          }
+        };
+      }
+      $("kb-search").oninput = renderKB;
+      renderFacts();
+    </script>
+  </body>
+</html>
